@@ -1,0 +1,35 @@
+env:
+  global:
+    - COVERAGE=true
+    - CODECOV_TOKEN=c47bbd5c-d6d7-4fbe-a475-fc8524915f36
+
+sudo: required
+
+os:
+    -linux
+    -windows
+
+services:
+    - docker
+
+before_install:
+    # install heroku cli
+    - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+    # login to docker registry
+    - docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+    - docker build -t amitsaran/$HEROKU_APP_NAME -f Dockerfile.dev .
+
+script:
+    - docker run amitsaran/$HEROKU_APP_NAME npm run test -- --coverage
+    - docker build -t registry.heroku.com/$HEROKU_APP_NAME/web .
+
+after_success:
+    - docker run npm run codecov
+
+deploy:
+    provider: script 
+    script: 
+        docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+        heroku container:release web --app $HEROKU_APP_NAME; 
+    on: 
+        branch: master
