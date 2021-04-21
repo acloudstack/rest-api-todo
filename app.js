@@ -1,6 +1,7 @@
 const express = require("express");
 const todosRoutes = require("./routes/todos.routes");
 const vacationsRoutes = require("./routes/vacations.routes");
+const hotelsRoutes = require("./routes/hotels.routes");
 const mongodb = require("./mongodb/mongodb.connect");
 
 const app = express();
@@ -11,6 +12,7 @@ app.get("/", (req, res) => {
 });
 app.use("/todos", todosRoutes);
 app.use("/vacations", vacationsRoutes);
+app.use("/hotels", hotelsRoutes);
 
 // For invalid routes
 app.get('*', (req, res) => {
